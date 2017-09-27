@@ -50,3 +50,36 @@ python -m baselines.deepq.experiments.atari.download_model --blob model-atari-du
 python -m baselines.deepq.experiments.atari.enjoy --model-dir /tmp/models/model-atari-duel-pong-1 --env Pong --dueling
 
 ```
+## DQN Details
+
+The following text was not in the original OpenAI Baselines repository, but was added in this fork by Dennis Soemers.
+
+#### Summary
+
+(source: https://github.com/dennybritz/reinforcement-learning/tree/master/DQN)
+
+- DQN: Q-Learning but with a Deep Neural Network as a function approximator.
+- Using a non-linear Deep Neural Network is powerful, but training is unstable if we apply it naively.
+- Trick 1 - Experience Replay: Store experience `(S, A, R, S_next)` in a replay buffer and sample minibatches from it to train the network. This decorrelates the data and leads to better data efficiency. In the beginning, the replay buffer is filled with random experience.
+- Trick 2 - Target Network: Use a separate network to estimate the TD target. This target network has the same architecture as the function approximator but with frozen parameters. Every T steps (a hyperparameter) the parameters from the Q network are copied to the target network. This leads to more stable training because it keeps the target function fixed (for a while).
+- By using a Convolutional Neural Network as the function approximator on raw pixels of Atari games where the score is the reward we can learn to play many of those games at human-like performance.
+- Double DQN: Just like regular Q-Learning, DQN tends to overestimate values due to its max operation applied to both selecting and estimating actions. We get around this by using the Q network for selection and the target network for estimation when making updates.
+
+#### Important Limitations
+
+- DQN plays the action corresponding to the output node with the maximum predicted value. This implies that it can only handle environments with discrete actions.
+
+#### Implementation Details
+
+##### Architecture
+- Supports regular Multi-Layer Perceptrons using `deepq.models.mlp` and Convolutional Networks (for pixel-input) using `deepq.models.cnn_to_mlp`.
+- The CNN also supports a Dueling architecture by setting `dueling=True` in `deepq.models.cnn_to_mlp`. There does not appear to be support for a dueling non-convolutional architecture yet in the implementation. From reading done so far, Dueling seems to be a fairly generally applicable modification that is expected to improve performance in most applications, so it appears that it'll often be useful to set this to `True`.
+
+##### Training
+- A model can be trained using `deepq.learn` (which is actually `deepq.simply.learn` due to import from `deepq.__init__.py`).
+- Prioritized Replay (instead of uniform sampling from Replay Buffer) is supported using `prioritized_replay=True`
+
+#### Original sources on DQN
+
+- https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf
+- https://deepmind.com/research/dqn/
