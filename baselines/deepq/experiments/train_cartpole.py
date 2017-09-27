@@ -11,7 +11,7 @@ def callback(lcl, glb):
 
 def main():
     env = gym.make("CartPole-v0")
-    model = deepq.models.mlp([64])
+    model = deepq.models.mlp([64])      # MLP with one hidden layer of 64 units
     act = deepq.learn(
         env,
         q_func=model,

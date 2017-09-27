@@ -160,7 +160,7 @@ def learn(env,
     -------
     act: ActWrapper
         Wrapper over act function. Adds ability to save it and load it.
-        See header of baselines/deepq/categorical.py for details on the act function.
+        See header of baselines/deepq/build_graph.py for details on the act function.
     """
     # Create all the functions necessary to train the model
 
