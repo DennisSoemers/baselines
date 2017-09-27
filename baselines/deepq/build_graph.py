@@ -4,7 +4,7 @@ The functions in this file can are used to create the following functions:
 
 ======= act ========
 
-    Function to chose an action given an observation
+    Function to choose an action given an observation
 
     Parameters
     ----------
@@ -24,7 +24,7 @@ The functions in this file can are used to create the following functions:
 
 ======= act (in case of parameter noise) ========
 
-    Function to chose an action given an observation
+    Function to choose an action given an observation
 
     Parameters
     ----------
