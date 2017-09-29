@@ -27,8 +27,10 @@ def train(env_id, num_frames, seed):
     workerseed = seed + 10000 * MPI.COMM_WORLD.Get_rank()
     set_global_seeds(workerseed)
     env = gym.make(env_id)
+
     def policy_fn(name, ob_space, ac_space): #pylint: disable=W0613
         return CnnPolicy(name=name, ob_space=env.observation_space, ac_space=env.action_space)
+
     env = bench.Monitor(env, logger.get_dir() and 
         osp.join(logger.get_dir(), "%i.monitor.json"%rank))
     env.seed(workerseed)
