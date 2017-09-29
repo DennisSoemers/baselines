@@ -28,6 +28,7 @@ class CnnPolicy(object):
             x = tf.nn.relu(U.dense(x, 128, 'lin', U.normc_initializer(1.0)))
             logits = U.dense(x, pdtype.param_shape()[0], "logits", U.normc_initializer(0.01))
             self.pd = pdtype.pdfromflat(logits)
+
         with tf.variable_scope("vf"):
             x = obscaled
             x = tf.nn.relu(U.conv2d(x, 8, "l1", [8, 8], [4, 4], pad="VALID"))
@@ -47,10 +48,13 @@ class CnnPolicy(object):
     def act(self, stochastic, ob):
         ac1, vpred1 =  self._act(stochastic, ob[None])
         return ac1[0], vpred1[0]
+
     def get_variables(self):
         return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, self.scope)
+
     def get_trainable_variables(self):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, self.scope)
+
     def get_initial_state(self):
         return []
 
