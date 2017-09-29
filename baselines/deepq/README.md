@@ -50,6 +50,7 @@ python -m baselines.deepq.experiments.atari.download_model --blob model-atari-du
 python -m baselines.deepq.experiments.atari.enjoy --model-dir /tmp/models/model-atari-duel-pong-1 --env Pong --dueling
 
 ```
+
 ## DQN Details
 
 The following text was not in the original OpenAI Baselines repository, but was added in this fork by Dennis Soemers.
