@@ -22,5 +22,13 @@ The following text was not in the original OpenAI Baselines repository, but was 
 
 According to [http://www.cs.toronto.edu/~tingwuwang/trpo.pdf](http://www.cs.toronto.edu/~tingwuwang/trpo.pdf):
 
-- Sample-inefficient (typically requires lots of samples) (according to above link)
-- Unable to scale to large networks (according to link above)
+- Sample-inefficient (typically requires lots of samples)
+- Unable to scale to large networks
+
+According to [PPO blog post](https://blog.openai.com/openai-baselines-ppo/):
+
+- Not easily compatible with algorithms that share parameters between a policy and value function or auxiliary losses (which is useful in domains with high-dimensional/visual input like Atari)
+
+According to [PPO paper](https://arxiv.org/abs/1707.06347):
+
+- Not compatible with architectures that include noise (for example, dropout).
