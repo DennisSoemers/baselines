@@ -21,7 +21,7 @@ pip install -e .
 - [PPO](baselines/ppo1)
 - [TRPO](baselines/trpo_mpi)
 
-To cite this repository in publications (*NOTE:* this is for the original OpenAI repository, not for this specific fork!):
+To cite this repository in publications (**NOTE:** this is for the original OpenAI repository, not for this specific fork!):
 
     @misc{baselines,
       author = {Hesse, Christopher and Plappert, Matthias and Radford, Alec and Schulman, John and Sidor, Szymon and Wu, Yuhuai},
