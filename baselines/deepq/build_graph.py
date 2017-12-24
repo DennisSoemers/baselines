@@ -143,22 +143,44 @@ def build_act(make_obs_ph, q_func, num_actions, scope="deepq", reuse=None):
 `       See the top of the file for details.
     """
     with tf.variable_scope(scope, reuse=reuse):
+        # placeholder which can take arbitrarily-sized batches of observations
         observations_ph = U.ensure_tf_input(make_obs_ph("observation"))
+
+        # a single-bool placeholder. We can set this to True or False if we want epsilon-greedy or greedy, respectively
         stochastic_ph = tf.placeholder(tf.bool, (), name="stochastic")
+
+        # a single-float placeholder. We can use this to update the value of epsilon
         update_eps_ph = tf.placeholder(tf.float32, (), name="update_eps")
 
+        # a single-float variable. This will hold epsilon
         eps = tf.get_variable("eps", (), initializer=tf.constant_initializer(0))
 
+        # this basically calls one of the functions in baselines.deepq.models.py
+        # q_values will now be a Tensor that should be predicting action values
         q_values = q_func(observations_ph.get(), num_actions, scope="q_func")
+
+        # tensor that computes the argmax of the action values
         deterministic_actions = tf.argmax(q_values, axis=1)
 
         batch_size = tf.shape(observations_ph.get())[0]
+
+        # this generates a random action
         random_actions = tf.random_uniform(tf.stack([batch_size]), minval=0, maxval=num_actions, dtype=tf.int64)
+
+        # this generates a random number and compares to epsilon to decide whether to play a random action
         chose_random = tf.random_uniform(tf.stack([batch_size]), minval=0, maxval=1, dtype=tf.float32) < eps
+
+        # this combines deterministic_actions, random_actions and chose_random to select an action
+        # according to epsilon-greedy strategy
         stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions)
 
+        # this chooses between epsilon-greedy and greedy policy according to stochastic_ph, and gives us an action
         output_actions = tf.cond(stochastic_ph, lambda: stochastic_actions, lambda: deterministic_actions)
+
+        # expression to update the value of epsilon
         update_eps_expr = eps.assign(tf.cond(update_eps_ph >= 0, lambda: update_eps_ph, lambda: eps))
+
+        # creates the function that we can call to give us one action to take per element in given batch of observations
         act = U.function(inputs=[observations_ph, stochastic_ph, update_eps_ph],
                          outputs=output_actions,
                          givens={update_eps_ph: -1.0, stochastic_ph: True},
@@ -280,7 +302,7 @@ def build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope="deepq", 
 
 
 def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=None, gamma=1.0,
-    double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None):
+                double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None):
     """Creates the train function:
 
     Parameters
@@ -336,7 +358,7 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
     """
     if param_noise:
         act_f = build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse,
-            param_noise_filter_func=param_noise_filter_func)
+                                           param_noise_filter_func=param_noise_filter_func)
     else:
         act_f = build_act(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse)
 

@@ -6,6 +6,9 @@ def _mlp(hiddens, inpt, num_actions, scope, reuse=False, layer_norm=False):
     with tf.variable_scope(scope, reuse=reuse):
         out = inpt
         for hidden in hiddens:
+            # I suspect activation_fn=None (with a separate tf.nn.relu() afterwards) is done because, if
+            # layer_norm is used, layer normalization should be applied before the nonlinearity
+            # (according to the original layer normalization paper at least)
             out = layers.fully_connected(out, num_outputs=hidden, activation_fn=None)
             if layer_norm:
                 out = layers.layer_norm(out, center=True, scale=True)
