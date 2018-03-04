@@ -222,19 +222,13 @@ def relatively_safe_pickle_dump(obj, path, compression=False):
     temp_storage = path + ".relatively_safe"
     if compression:
         # Using gzip here would be simpler, but the size is limited to 2GB
-        with tempfile.NamedTemporaryFile() as uncompressed_file:
+        with tempfile.NamedTemporaryFile(delete=False) as uncompressed_file:
             pickle.dump(obj, uncompressed_file)
-            # most recent openai code
-            uncompressed_file.file.flush()
-            with zipfile.ZipFile(temp_storage, "w", compression=zipfile.ZIP_DEFLATED) as myzip:
-                myzip.write(uncompressed_file.name, "data")
+            uncompressed_file_name = uncompressed_file.name
+        with zipfile.ZipFile(temp_storage, "w", compression=zipfile.ZIP_DEFLATED) as myzip:
+            myzip.write(uncompressed_file_name, "data")
 
-            # old code from my branch TODO
-            #uncompressed_file_name = uncompressed_file.name
-        #with zipfile.ZipFile(temp_storage, "w", compression=zipfile.ZIP_DEFLATED) as myzip:
-            #myzip.write(uncompressed_file_name, "data")
-
-        #os.unlink(uncompressed_file_name)
+        os.unlink(uncompressed_file_name)
     else:
         with open(temp_storage, "wb") as f:
             pickle.dump(obj, f)
